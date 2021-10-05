@@ -1,6 +1,8 @@
 package com.aslnstbk.currencycoin.di
 
+import android.app.Application
 import com.aslnstbk.currencycoin.data.api.CurrencyApi
+import com.aslnstbk.currencycoin.data.db.FavoriteCoinsDataSource
 import com.aslnstbk.currencycoin.data.repositories.DefaultCurrencyRepository
 import com.aslnstbk.currencycoin.domain.repositories.CurrencyRepository
 import dagger.Module
@@ -31,7 +33,18 @@ object ApplicationModule {
     }
 
     @Provides
-    fun providesCurrencyRepository(api: CurrencyApi): CurrencyRepository {
-        return DefaultCurrencyRepository(api)
+    fun providesCurrencyRepository(
+        api: CurrencyApi,
+        dataSource: FavoriteCoinsDataSource
+    ): CurrencyRepository {
+        return DefaultCurrencyRepository(api, dataSource)
+    }
+
+    @Provides
+    @Singleton
+    fun provideFavoriteCoinsDataSource(
+        application: Application
+    ): FavoriteCoinsDataSource {
+        return FavoriteCoinsDataSource(application = application)
     }
 }

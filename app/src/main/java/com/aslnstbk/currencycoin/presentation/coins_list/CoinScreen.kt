@@ -4,9 +4,9 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material.Button
-import androidx.compose.material.FloatingActionButton
-import androidx.compose.material.Text
+import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
@@ -15,7 +15,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.aslnstbk.currencycoin.presentation.coins_list.components.CoinListItem
 import com.aslnstbk.currencycoin.presentation.common.Navigation
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 
 @Composable
@@ -27,48 +26,63 @@ fun CoinListScreen(
     val scrollState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
 
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .fillMaxHeight(),
-        verticalArrangement = Arrangement.SpaceBetween
-
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(text = "Coins")
+                },
+                actions = {
+                    IconButton(onClick = { navController.navigate(Navigation.FavoriteCoins.route) }) {
+                        Icon(Icons.Filled.Favorite, contentDescription = null)
+                    }
+                }
+            )
+        }
     ) {
-        Row(
-            horizontalArrangement = Arrangement.SpaceBetween,
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp)
+                .fillMaxHeight(),
+            verticalArrangement = Arrangement.SpaceBetween
+
         ) {
-            Button(
-                onClick = {
-                    coroutineScope.launch {
-                        scrollState.animateScrollToItem(0)
-                    }
-                }
+            Row(
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
             ) {
-                Text(text = "Top")
+                Button(
+                    onClick = {
+                        coroutineScope.launch {
+                            scrollState.animateScrollToItem(0)
+                        }
+                    }
+                ) {
+                    Text(text = "Top")
+                }
+
+                Button(
+                    onClick = {
+                        coroutineScope.launch {
+                            scrollState.animateScrollToItem(state.coins.size - 1)
+                        }
+                    }
+                ) {
+                    Text(text = "Bottom")
+                }
             }
 
-            Button(
-                onClick = {
-                    coroutineScope.launch {
-                        scrollState.animateScrollToItem(state.coins.size - 1)
-                    }
+            LazyColumn(state = scrollState) {
+                items(state.coins) { coin ->
+                    CoinListItem(
+                        coin = coin,
+                        onItemClick = {
+                            navController.navigate(route = Navigation.CoinDetail.route + "/${coin.id}")
+                        }
+                    )
                 }
-            ) {
-                Text(text = "Bottom")
-            }
-        }
-
-        LazyColumn(state = scrollState) {
-            items(state.coins) { coin ->
-                CoinListItem(
-                    coin = coin,
-                    onItemClick = {
-                        navController.navigate(route = Navigation.CoinDetail.route + "/${coin.id}")
-                    }
-                )
             }
         }
     }

@@ -6,9 +6,8 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
@@ -17,6 +16,7 @@ import androidx.navigation.compose.rememberNavController
 import com.aslnstbk.currencycoin.presentation.coin_detail.CoinDetailScreen
 import com.aslnstbk.currencycoin.presentation.coins_list.CoinListScreen
 import com.aslnstbk.currencycoin.presentation.common.Navigation
+import com.aslnstbk.currencycoin.presentation.favorite_coins.FavoriteCoinsScreen
 import com.aslnstbk.currencycoin.presentation.ui.theme.CurrencyCoinTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -43,30 +43,20 @@ fun MyApp() {
             .fillMaxWidth()
             .fillMaxHeight()
     ) {
-        Scaffold(
-            topBar = {
-                TopAppBar(
-                    title = {
-                        Text(text = "Coins")
-                    },
-                    actions = {
-                        IconButton(onClick = { /*TODO*/ }) {
-                            Icon(Icons.Filled.Favorite, contentDescription = null)
-                        }
-                    }
-                )
-            }
+        NavHost(
+            navController = navController,
+            startDestination = Navigation.CoinList.route
         ) {
-            NavHost(
-                navController = navController,
-                startDestination = Navigation.CoinList.route
-            ) {
-                composable(Navigation.CoinList.route) {
-                    CoinListScreen(navController = navController)
+            composable(route = Navigation.CoinList.route) {
+                CoinListScreen(navController = navController)
+            }
+            composable(route = Navigation.CoinDetail.route + "/{coinId}") {
+                CoinDetailScreen {
+                    navController.navigateUp()
                 }
-                composable(Navigation.CoinDetail.route + "/{coinId}") {
-                    CoinDetailScreen()
-                }
+            }
+            composable(route = Navigation.FavoriteCoins.route) {
+                FavoriteCoinsScreen(navController = navController)
             }
         }
     }

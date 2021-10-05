@@ -9,4 +9,6 @@ data class CoinDetail(
     val tags: List<CoinTag>,
     val team: List<CoinTeam>,
     val description: String
-)
+) {
+    var isFavorite: Boolean = false
+}
